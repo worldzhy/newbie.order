@@ -1,0 +1,56 @@
+// !! ------------------------------------------------------------ //
+// !!            [Microservice] Order models                       //
+// !! ------------------------------------------------------------ //
+// * Order                                                         //
+// * OrderItem                                                     //
+// * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
+
+model Order {
+  id            String        @id @default(cuid())
+  status        OrderStatus   @default(PENDING)
+  totalAmount   Float
+  paymentMethod PaymentMethod
+  items         OrderItem[]
+  note          String?
+  userId        String        @db.Uuid
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@schema("microservice/order")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  spuId     String   @db.Uuid
+  skuId     String   @db.Uuid
+  unitPrice Float
+  quantity  Int
+  subTotal  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+
+  @@schema("microservice/order")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+
+  @@schema("microservice/order")
+}
+
+enum PaymentMethod {
+  ALIPAY
+  BANK_TRANSFER
+  CASH
+  PAYPAL
+  WECHAT_PAY
+
+  @@schema("microservice/order")
+}
