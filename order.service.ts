@@ -18,7 +18,6 @@ export class OrderService {
     }
 
     const orderItems = params.items.map(item => {
-      totalAmount += item.unitPrice * (item.quantity || 1);
       return {
         spuId: item.skuId, // Assuming skuId is the same as spuId
         skuId: item.skuId,

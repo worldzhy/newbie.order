@@ -63,7 +63,8 @@ export class OrderController {
 
   @Get('')
   async getOrders(@Query() query: ListOrdersDto) {
-    return await this.prisma.findManyInManyPages({
+    // Get orders with pagination and sorting
+    const result = await this.prisma.findManyInManyPages({
       model: 'Order',
       pagination: query,
       findManyArgs: {
@@ -71,6 +72,25 @@ export class OrderController {
         orderBy: {createdAt: 'desc'},
       },
     });
+
+    // Fetch user information for each order
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: {in: result.records.map(order => order.userId)},
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    // Attach user information to each order
+    result.records.forEach(order => {
+      const user = users.find(u => u.id === order.userId);
+      order.userName = user ? user.name : 'Unknown User';
+    });
+
+    return result;
   }
 
   @Get(':id')
