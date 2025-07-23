@@ -1,11 +1,9 @@
 import {PrismaService} from '@framework/prisma/prisma.service';
-import {Body, Controller, Param, Patch, Post, Req} from '@nestjs/common';
+import {Body, Controller, Param, Patch, Post} from '@nestjs/common';
 import {ApiTags, ApiBearerAuth, ApiBody} from '@nestjs/swagger';
 import {CreateOrderDto, UpdateOrderDto} from './order.dto';
 import {OrderService} from './order.service';
-import {TokenService} from '@microservices/account/security/token/token.service';
 import {PaymentMethod} from '@prisma/client';
-import {Request} from 'express';
 import {GuardByApiKey} from '@microservices/account/security/passport/api-key/api-key.decorator';
 
 @ApiTags('Order Management')
@@ -14,8 +12,7 @@ import {GuardByApiKey} from '@microservices/account/security/passport/api-key/ap
 export class WechatOrderController {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly orderService: OrderService,
-    private readonly tokenService: TokenService
+    private readonly orderService: OrderService
   ) {}
 
   @GuardByApiKey()
@@ -38,18 +35,16 @@ export class WechatOrderController {
       },
     },
   })
-  async createOrder(@Req() request: Request, @Body() body: CreateOrderDto) {
-    const accessToken = this.tokenService.getTokenFromHttpRequest(request);
-    if (!accessToken) {
-      throw new Error('Access token is required');
-    }
-    const userId = this.tokenService.verifyUserAccessToken(accessToken).userId;
+  async createOrder(@Body() body: CreateOrderDto) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: {wechatOpenId: body.wechatOpenId},
+    });
 
     return await this.orderService.create({
       paymentMethod: body.paymentMethod,
       items: body.items,
       note: body.note,
-      userId,
+      userId: user.id,
     });
   }
 
