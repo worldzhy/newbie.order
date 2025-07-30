@@ -5,28 +5,25 @@ import {
 import {ApiProperty} from '@nestjs/swagger';
 import {OrderStatus, PaymentMethod} from '@prisma/client';
 import {IsArray, IsIn, IsOptional, IsString} from 'class-validator';
+import {OrderEntity, OrderItemRequestEntity} from './order.entity';
 
-class OrderItemEntity {
-  @ApiProperty({type: String})
-  id: string;
+export class CreateOrderRequestDto {
+  @ApiProperty({type: String, required: true})
+  @IsString()
+  @IsIn(Object.values(PaymentMethod))
+  paymentMethod: PaymentMethod;
 
-  @ApiProperty({type: String})
-  spuId: string;
+  @ApiProperty({type: OrderItemRequestEntity, isArray: true, required: true})
+  @IsArray()
+  items: OrderItemRequestEntity[];
 
-  @ApiProperty({type: String})
-  skuId: string;
-
-  @ApiProperty({type: Number})
-  unitPrice: number;
-
-  @ApiProperty({type: Number})
-  quantity: number;
-
-  @ApiProperty({type: Number})
-  subTotal: number;
+  @ApiProperty({type: String, required: false})
+  @IsString()
+  @IsOptional()
+  note?: string;
 }
 
-class OrderEntity {
+export class CreateOrderResponseDto {
   @ApiProperty({type: String})
   id: string;
 
@@ -39,9 +36,6 @@ class OrderEntity {
   @ApiProperty({enum: PaymentMethod})
   paymentMethod: PaymentMethod;
 
-  @ApiProperty({type: OrderItemEntity, isArray: true})
-  items: OrderItemEntity[];
-
   @ApiProperty({type: String, required: false})
   note?: string;
 
@@ -52,35 +46,16 @@ class OrderEntity {
 export class ListOrdersRequestDto extends CommonListRequestDto {
   @ApiProperty({type: String, required: false})
   @IsString()
+  @IsOptional()
   userId?: string;
 }
 
 export class ListOrdersResponseDto extends CommonListResponseDto {
-  @ApiProperty({type: OrderEntity, isArray: true, items: {type: 'object'}})
+  @ApiProperty({type: OrderEntity, isArray: true})
   declare records: OrderEntity[];
 }
 
-export class CreateOrderDto {
-  @ApiProperty({type: String, required: true})
-  @IsString()
-  wechatOpenId: string;
-
-  @ApiProperty({type: String, required: true})
-  @IsString()
-  @IsIn(Object.values(PaymentMethod))
-  paymentMethod: PaymentMethod;
-
-  @ApiProperty({type: Array, required: true})
-  @IsArray()
-  items: {skuId: string; unitPrice: number; quantity?: number}[];
-
-  @ApiProperty({type: String, required: false})
-  @IsString()
-  @IsOptional()
-  note?: string;
-}
-
-export class UpdateOrderDto {
+export class UpdateOrderRequestDto {
   @ApiProperty({type: String, required: false})
   @IsString()
   @IsOptional()
@@ -92,3 +67,5 @@ export class UpdateOrderDto {
   @IsOptional()
   note?: string;
 }
+
+export class UpdateOrderResponseDto extends CreateOrderResponseDto {}

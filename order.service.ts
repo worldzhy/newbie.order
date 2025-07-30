@@ -8,7 +8,12 @@ export class OrderService {
 
   async create(params: {
     paymentMethod: PaymentMethod;
-    items: {skuId: string; unitPrice: number; quantity?: number}[];
+    items: {
+      skuId: string;
+      name: string;
+      unitPrice: number;
+      quantity?: number;
+    }[];
     note?: string;
     userId: string;
   }) {
@@ -19,8 +24,8 @@ export class OrderService {
 
     const orderItems = params.items.map(item => {
       return {
-        spuId: item.skuId, // Assuming skuId is the same as spuId
         skuId: item.skuId,
+        name: item.name,
         unitPrice: item.unitPrice,
         quantity: item.quantity || 1,
         subTotal: item.unitPrice * (item.quantity || 1),

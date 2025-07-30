@@ -13,19 +13,19 @@ import {
 import {
   ApiTags,
   ApiBearerAuth,
-  ApiBody,
   ApiResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import {
-  CreateOrderDto,
+  CreateOrderRequestDto,
+  CreateOrderResponseDto,
   ListOrdersRequestDto,
   ListOrdersResponseDto,
-  UpdateOrderDto,
+  UpdateOrderRequestDto,
+  UpdateOrderResponseDto,
 } from './order.dto';
 import {OrderService} from './order.service';
 import {TokenService} from '@microservices/account/security/token/token.service';
-import {PaymentMethod} from '@prisma/client';
 import {Request} from 'express';
 
 @ApiTags('Order Management')
@@ -39,25 +39,11 @@ export class OrderController {
   ) {}
 
   @Post('')
-  @ApiBody({
-    description: 'Create a folder in AWS S3',
-    examples: {
-      a: {
-        value: {
-          paymentMethod: PaymentMethod.WECHAT_PAY,
-          items: [
-            {
-              skuId: '44f36b0b-2602-45d0-a2ed-b22085d1e845',
-              unitPrice: 100.0,
-              quantity: 1,
-            },
-          ],
-          note: 'This is a test order',
-        },
-      },
-    },
-  })
-  async createOrder(@Req() request: Request, @Body() body: CreateOrderDto) {
+  @ApiResponse({type: CreateOrderResponseDto})
+  async createOrder(
+    @Req() request: Request,
+    @Body() body: CreateOrderRequestDto
+  ) {
     const accessToken = this.tokenService.getTokenFromHttpRequest(request);
     if (!accessToken) {
       throw new Error('Access token is required');
@@ -81,13 +67,13 @@ export class OrderController {
     description: 'Get orders with pagination and sorting',
   })
   async getOrders(@Query() query: ListOrdersRequestDto) {
-    // Get orders with pagination and sorting
     const result = await this.prisma.findManyInManyPages({
       model: 'Order',
       pagination: query,
       findManyArgs: {
-        where: {},
+        where: query.userId ? {userId: query.userId} : {},
         orderBy: {createdAt: 'desc'},
+        include: {items: true},
       },
     });
 
@@ -117,7 +103,11 @@ export class OrderController {
   }
 
   @Patch(':id')
-  async updateOrder(@Param('id') id: string, @Body() body: UpdateOrderDto) {
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async updateOrder(
+    @Param('id') id: string,
+    @Body() body: UpdateOrderRequestDto
+  ) {
     return await this.prisma.order.update({
       where: {id},
       data: body,

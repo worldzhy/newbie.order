@@ -1,10 +1,19 @@
 import {PrismaService} from '@framework/prisma/prisma.service';
 import {Body, Controller, Param, Patch, Post} from '@nestjs/common';
-import {ApiTags, ApiBearerAuth, ApiBody} from '@nestjs/swagger';
-import {CreateOrderDto, UpdateOrderDto} from './order.dto';
-import {OrderService} from './order.service';
-import {PaymentMethod} from '@prisma/client';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import {GuardByApiKey} from '@microservices/account/security/passport/api-key/api-key.decorator';
+import {OrderService} from './order.service';
+import {
+  CreateOrderResponseDto,
+  UpdateOrderRequestDto,
+  UpdateOrderResponseDto,
+} from './order.dto';
+import {WechatCreateOrderRequestDto} from './wechat.order.dto';
 
 @ApiTags('Order Management')
 @ApiBearerAuth()
@@ -17,25 +26,9 @@ export class WechatOrderController {
 
   @GuardByApiKey()
   @Post('')
-  @ApiBody({
-    description: 'Create a folder in AWS S3',
-    examples: {
-      a: {
-        value: {
-          paymentMethod: PaymentMethod.WECHAT_PAY,
-          items: [
-            {
-              skuId: '44f36b0b-2602-45d0-a2ed-b22085d1e845',
-              unitPrice: 100.0,
-              quantity: 1,
-            },
-          ],
-          note: 'This is a test order',
-        },
-      },
-    },
-  })
-  async createOrder(@Body() body: CreateOrderDto) {
+  @ApiResponse({type: CreateOrderResponseDto})
+  @ApiOperation({summary: 'Create a new order from WeChat'})
+  async createOrder(@Body() body: WechatCreateOrderRequestDto) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: {wechatOpenId: body.wechatOpenId},
     });
@@ -50,7 +43,11 @@ export class WechatOrderController {
 
   @GuardByApiKey()
   @Patch(':id')
-  async updateOrder(@Param('id') id: string, @Body() body: UpdateOrderDto) {
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async updateOrder(
+    @Param('id') id: string,
+    @Body() body: UpdateOrderRequestDto
+  ) {
     return await this.prisma.order.update({
       where: {id},
       data: body,
