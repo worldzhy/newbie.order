@@ -21,8 +21,9 @@ model Order {
 
 model OrderItem {
   id        String   @id @default(cuid())
-  spuId     String   @db.Uuid
+  spuId     String?  @db.Uuid
   skuId     String   @db.Uuid
+  name      String
   unitPrice Float
   quantity  Int
   subTotal  Float
