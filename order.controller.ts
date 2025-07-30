@@ -10,8 +10,19 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import {ApiTags, ApiBearerAuth, ApiBody} from '@nestjs/swagger';
-import {CreateOrderDto, ListOrdersDto, UpdateOrderDto} from './order.dto';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiBody,
+  ApiResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
+import {
+  CreateOrderDto,
+  ListOrdersRequestDto,
+  ListOrdersResponseDto,
+  UpdateOrderDto,
+} from './order.dto';
 import {OrderService} from './order.service';
 import {TokenService} from '@microservices/account/security/token/token.service';
 import {PaymentMethod} from '@prisma/client';
@@ -62,7 +73,14 @@ export class OrderController {
   }
 
   @Get('')
-  async getOrders(@Query() query: ListOrdersDto) {
+  @ApiResponse({
+    type: ListOrdersResponseDto,
+  })
+  @ApiOperation({
+    summary: 'Get orders with pagination and sorting',
+    description: 'Get orders with pagination and sorting',
+  })
+  async getOrders(@Query() query: ListOrdersRequestDto) {
     // Get orders with pagination and sorting
     const result = await this.prisma.findManyInManyPages({
       model: 'Order',
