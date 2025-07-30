@@ -1,9 +1,9 @@
-import {CommonPaginationReqDto} from '@framework/common.dto';
+import {CommonListRequestDto} from '@framework/common.dto';
 import {ApiProperty} from '@nestjs/swagger';
 import {OrderStatus, PaymentMethod} from '@prisma/client';
 import {IsArray, IsIn, IsOptional, IsString} from 'class-validator';
 
-export class ListOrdersDto extends CommonPaginationReqDto {}
+export class ListOrdersDto extends CommonListRequestDto {}
 
 export class CreateOrderDto {
   @ApiProperty({type: String, required: true})
