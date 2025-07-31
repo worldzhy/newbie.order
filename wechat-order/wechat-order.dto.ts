@@ -1,7 +1,7 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {PaymentMethod} from '@prisma/client';
 import {IsArray, IsIn, IsOptional, IsString} from 'class-validator';
-import {OrderItemRequestEntity} from './order.entity';
+import {OrderItemRequestEntity} from '../order.entity';
 
 export class WechatCreateOrderRequestDto {
   @ApiProperty({type: String, required: true})

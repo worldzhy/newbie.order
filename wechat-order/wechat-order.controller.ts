@@ -7,15 +7,15 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import {GuardByApiKey} from '@microservices/account/security/passport/api-key/api-key.decorator';
-import {OrderService} from './order.service';
+import {OrderService} from '../order.service';
 import {
   CreateOrderResponseDto,
   UpdateOrderRequestDto,
   UpdateOrderResponseDto,
-} from './order.dto';
-import {WechatCreateOrderRequestDto} from './wechat.order.dto';
+} from '../order.dto';
+import {WechatCreateOrderRequestDto} from './wechat-order.dto';
 
-@ApiTags('Order Management')
+@ApiTags('Order Management / Wechat Order')
 @ApiBearerAuth()
 @Controller('wechat-orders')
 export class WechatOrderController {
@@ -27,7 +27,9 @@ export class WechatOrderController {
   @GuardByApiKey()
   @Post('')
   @ApiResponse({type: CreateOrderResponseDto})
-  @ApiOperation({summary: 'Create a new order from WeChat'})
+  @ApiOperation({
+    summary: '[Auth by API key] Call from Tencent cloudbase workflow',
+  })
   async createOrder(@Body() body: WechatCreateOrderRequestDto) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: {wechatOpenId: body.wechatOpenId},
@@ -44,6 +46,9 @@ export class WechatOrderController {
   @GuardByApiKey()
   @Patch(':id')
   @ApiResponse({type: UpdateOrderResponseDto})
+  @ApiOperation({
+    summary: '[Auth by API key] Call from Tencent cloudbase workflow',
+  })
   async updateOrder(
     @Param('id') id: string,
     @Body() body: UpdateOrderRequestDto

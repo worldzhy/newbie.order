@@ -3,6 +3,7 @@
 // !! ------------------------------------------------------------ //
 // * Order                                                         //
 // * OrderItem                                                     //
+// * Sku                                                           //
 // * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
 
 model Order {
@@ -10,19 +11,17 @@ model Order {
   status        OrderStatus   @default(PENDING)
   totalAmount   Float
   paymentMethod PaymentMethod
-  items         OrderItem[]
   note          String?
   userId        String        @db.Uuid
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  items         OrderItem[]
 
   @@schema("microservice/order")
 }
 
 model OrderItem {
   id        String   @id @default(cuid())
-  spuId     String?  @db.Uuid
-  skuId     String   @db.Uuid
   name      String
   unitPrice Float
   quantity  Int
@@ -31,6 +30,20 @@ model OrderItem {
   updatedAt DateTime @updatedAt
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
+  sku       Sku      @relation(fields: [skuId], references: [id])
+  skuId     String   @db.Uuid
+
+  @@schema("microservice/order")
+}
+
+model Sku {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  price           Int
+  discountedPrice Int?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  orderItems      OrderItem[]
 
   @@schema("microservice/order")
 }

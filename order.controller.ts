@@ -10,12 +10,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiResponse,
-  ApiOperation,
-} from '@nestjs/swagger';
+import {ApiTags, ApiBearerAuth, ApiResponse} from '@nestjs/swagger';
 import {
   CreateOrderRequestDto,
   CreateOrderResponseDto,
@@ -60,13 +55,7 @@ export class OrderController {
   }
 
   @Get('')
-  @ApiResponse({
-    type: ListOrdersResponseDto,
-  })
-  @ApiOperation({
-    summary: 'Get orders with pagination and sorting',
-    description: 'Get orders with pagination and sorting',
-  })
+  @ApiResponse({type: ListOrdersResponseDto})
   async getOrders(@Query() query: ListOrdersRequestDto) {
     const result = await this.prisma.findManyInManyPages({
       model: 'Order',
@@ -99,13 +88,7 @@ export class OrderController {
   }
 
   @Get('my')
-  @ApiResponse({
-    type: ListOrdersResponseDto,
-  })
-  @ApiOperation({
-    summary: 'Get orders with pagination and sorting',
-    description: 'Get orders with pagination and sorting',
-  })
+  @ApiResponse({type: ListOrdersResponseDto})
   async getMyOrders(
     @Req() request: Request,
     @Query() query: ListOrdersRequestDto
