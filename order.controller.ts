@@ -27,6 +27,7 @@ import {
 import {OrderService} from './order.service';
 import {TokenService} from '@microservices/account/security/token/token.service';
 import {Request} from 'express';
+import {OrderStatus} from '@prisma/client';
 
 @ApiTags('Order Management')
 @ApiBearerAuth()
@@ -71,7 +72,7 @@ export class OrderController {
       model: 'Order',
       pagination: query,
       findManyArgs: {
-        where: query.userId ? {userId: query.userId} : {},
+        where: {},
         orderBy: {createdAt: 'desc'},
         include: {items: true},
       },
@@ -95,6 +96,35 @@ export class OrderController {
     });
 
     return result;
+  }
+
+  @Get('my')
+  @ApiResponse({
+    type: ListOrdersResponseDto,
+  })
+  @ApiOperation({
+    summary: 'Get orders with pagination and sorting',
+    description: 'Get orders with pagination and sorting',
+  })
+  async getMyOrders(
+    @Req() request: Request,
+    @Query() query: ListOrdersRequestDto
+  ) {
+    const accessToken = this.tokenService.getTokenFromHttpRequest(request);
+    if (!accessToken) {
+      throw new Error('Access token is required');
+    }
+    const userId = this.tokenService.verifyUserAccessToken(accessToken).userId;
+
+    return await this.prisma.findManyInManyPages({
+      model: 'Order',
+      pagination: query,
+      findManyArgs: {
+        where: {userId, status: OrderStatus.PAID},
+        orderBy: {createdAt: 'desc'},
+        include: {items: true},
+      },
+    });
   }
 
   @Get(':id')
