@@ -1,18 +1,22 @@
 // !! ------------------------------------------------------------ //
 // !!            [Microservice] Order models                       //
 // !! ------------------------------------------------------------ //
-// * Product                                                           //
+// * Product                                                       //
 // * Order                                                         //
 // * OrderItem                                                     //
+// * Contributor                                                   //
+// * CostPaymentRule                                               //
+// * CostPayment                                                   //
 // * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
 
 model Product {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String
-  price           Int // current price
-  discountedPrice Int? // current price after discount
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  price            Int // current price
+  discountedPrice  Int? // current price after discount
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  costPaymentRules CostPaymentRule[]
 
   @@schema("microservice/order")
 }
@@ -27,6 +31,7 @@ model Order {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   items         OrderItem[]
+  costPayments  CostPayment[]
 
   @@schema("microservice/order")
 }
@@ -42,6 +47,45 @@ model OrderItem {
   updatedAt DateTime @updatedAt
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
+
+  @@schema("microservice/order")
+}
+
+model Contributor {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isActive     Boolean       @default(true)
+  name         String
+  phone        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  costPayments CostPayment[]
+
+  @@schema("microservice/order")
+}
+
+model CostPaymentRule {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contribution String
+  amount       Float? // fixed amount
+  percentage   Float? // percentage of the order total amount
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?  @db.Uuid
+
+  @@schema("microservice/order")
+}
+
+model CostPayment {
+  id            String        @id @default(cuid())
+  method        PaymentMethod
+  amount        Float
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId       String        @db.Uuid
+  contributor   Contributor   @relation(fields: [contributorId], references: [id])
+  contributorId String        @db.Uuid
 
   @@schema("microservice/order")
 }
