@@ -48,7 +48,12 @@ export class CreateSkuResponseDto {
   discountedPrice: number;
 }
 
-export class ListSkusRequestDto extends CommonListRequestDto {}
+export class ListSkusRequestDto extends CommonListRequestDto {
+  @ApiProperty({type: String, required: false})
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
 
 export class ListSkusResponseDto extends CommonListResponseDto {
   @ApiProperty({type: SkuEntity, isArray: true})

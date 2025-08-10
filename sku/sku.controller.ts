@@ -35,10 +35,15 @@ export class SkuController {
   @Get('')
   @ApiResponse({type: ListSkusResponseDto})
   async getSkus(@Query() query: ListSkusRequestDto) {
+    const {name, ...pagination} = query;
+
     return await this.prisma.findManyInManyPages({
       model: Prisma.ModelName.Sku,
-      pagination: query,
-      findManyArgs: {orderBy: {createdAt: 'desc'}},
+      pagination: pagination,
+      findManyArgs: {
+        where: name ? {name: {contains: name}} : undefined,
+        orderBy: {createdAt: 'desc'},
+      },
     });
   }
 

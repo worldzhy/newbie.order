@@ -1,10 +1,22 @@
 // !! ------------------------------------------------------------ //
 // !!            [Microservice] Order models                       //
 // !! ------------------------------------------------------------ //
+// * Sku                                                           //
 // * Order                                                         //
 // * OrderItem                                                     //
-// * Sku                                                           //
 // * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
+
+model Sku {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  price           Int // current price
+  discountedPrice Int?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  orderItems      OrderItem[]
+
+  @@schema("microservice/order")
+}
 
 model Order {
   id            String        @id @default(cuid())
@@ -23,7 +35,7 @@ model Order {
 model OrderItem {
   id        String   @id @default(cuid())
   name      String
-  unitPrice Float
+  unitPrice Float // sold price 
   quantity  Int
   subTotal  Float
   createdAt DateTime @default(now())
@@ -32,18 +44,6 @@ model OrderItem {
   orderId   String
   sku       Sku      @relation(fields: [skuId], references: [id])
   skuId     String   @db.Uuid
-
-  @@schema("microservice/order")
-}
-
-model Sku {
-  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String
-  price           Int
-  discountedPrice Int?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  orderItems      OrderItem[]
 
   @@schema("microservice/order")
 }
