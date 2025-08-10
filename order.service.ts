@@ -9,7 +9,7 @@ export class OrderService {
   async create(params: {
     paymentMethod: PaymentMethod;
     items: {
-      skuId: string;
+      productId: string;
       name: string;
       unitPrice: number;
       quantity?: number;
@@ -24,7 +24,7 @@ export class OrderService {
 
     const orderItems = params.items.map(item => {
       return {
-        skuId: item.skuId,
+        productId: item.productId,
         name: item.name,
         unitPrice: item.unitPrice,
         quantity: item.quantity || 1,

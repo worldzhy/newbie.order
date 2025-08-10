@@ -4,7 +4,7 @@ import {IsOptional} from 'class-validator';
 
 export class OrderItemRequestEntity {
   @ApiProperty({type: String})
-  skuId: string;
+  productId: string;
 
   @ApiProperty({type: String})
   name: string;
@@ -25,7 +25,7 @@ export class OrderItemResponseEntity {
   spuId: string;
 
   @ApiProperty({type: String})
-  skuId: string;
+  productId: string;
 
   @ApiProperty({type: Number})
   unitPrice: number;

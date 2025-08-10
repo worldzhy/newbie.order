@@ -3,9 +3,9 @@ import {
   CommonListResponseDto,
 } from '@framework/common.dto';
 import {ApiProperty} from '@nestjs/swagger';
-import {IsIn, IsNumber, IsOptional, IsString} from 'class-validator';
+import {IsNumber, IsOptional, IsString} from 'class-validator';
 
-class SkuEntity {
+class ProductEntity {
   @ApiProperty({type: String})
   id: string;
 
@@ -19,7 +19,7 @@ class SkuEntity {
   discountedPrice?: number;
 }
 
-export class CreateSkuRequestDto {
+export class CreateProductRequestDto {
   @ApiProperty({type: String, required: true})
   @IsString()
   name: string;
@@ -34,7 +34,7 @@ export class CreateSkuRequestDto {
   discountedPrice?: number;
 }
 
-export class CreateSkuResponseDto {
+export class CreateProductResponseDto {
   @ApiProperty({type: String})
   id: string;
 
@@ -48,19 +48,19 @@ export class CreateSkuResponseDto {
   discountedPrice: number;
 }
 
-export class ListSkusRequestDto extends CommonListRequestDto {
+export class ListProductsRequestDto extends CommonListRequestDto {
   @ApiProperty({type: String, required: false})
   @IsString()
   @IsOptional()
   name?: string;
 }
 
-export class ListSkusResponseDto extends CommonListResponseDto {
-  @ApiProperty({type: SkuEntity, isArray: true})
-  declare records: SkuEntity[];
+export class ListProductsResponseDto extends CommonListResponseDto {
+  @ApiProperty({type: ProductEntity, isArray: true})
+  declare records: ProductEntity[];
 }
 
-export class UpdateSkuRequestDto {
+export class UpdateProductRequestDto {
   @ApiProperty({type: String, required: false})
   @IsString()
   @IsOptional()
@@ -77,4 +77,4 @@ export class UpdateSkuRequestDto {
   discountedPrice?: number;
 }
 
-export class UpdateSkuResponseDto extends CreateSkuResponseDto {}
+export class UpdateProductResponseDto extends CreateProductResponseDto {}
