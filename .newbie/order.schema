@@ -10,10 +10,11 @@
 // * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
 
 model Product {
-  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               Int               @id @default(autoincrement())
+  skuId            String            @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name             String
-  price            Int // current price
-  discountedPrice  Int? // current price after discount
+  price            Int // current price in cents
+  discountedPrice  Int? // current price after discount in cents
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   costPaymentRules CostPaymentRule[]
@@ -24,7 +25,7 @@ model Product {
 model Order {
   id            String        @id @default(cuid())
   status        OrderStatus   @default(PENDING)
-  totalAmount   Float
+  totalAmount   Int // in cents
   paymentMethod PaymentMethod
   note          String?
   userId        String        @db.Uuid
@@ -38,11 +39,11 @@ model Order {
 
 model OrderItem {
   id        String   @id @default(cuid())
-  productId String?  @db.Uuid
+  skuId     String?  @db.Uuid
   name      String
-  unitPrice Float // sold price 
+  unitPrice Int // sold price in cents
   quantity  Int
-  subTotal  Float
+  subTotal  Int // in cents
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -66,12 +67,12 @@ model Contributor {
 model CostPaymentRule {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   contribution String
-  amount       Float? // fixed amount
-  percentage   Float? // percentage of the order total amount
+  amount       Int? // fixed amount in cents
+  percentage   Int? // percentage of the order total amount
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   product      Product? @relation(fields: [productId], references: [id])
-  productId    String?  @db.Uuid
+  productId    Int?
 
   @@schema("microservice/order")
 }
