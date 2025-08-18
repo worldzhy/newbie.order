@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {PrismaService} from '@framework/prisma/prisma.service';
 import {PaymentMethod} from '@prisma/client';
+import {OrderItemRequestEntity} from './order.entity';
 
 @Injectable()
 export class OrderService {
@@ -8,12 +9,7 @@ export class OrderService {
 
   async create(params: {
     paymentMethod: PaymentMethod;
-    items: {
-      productId: string;
-      name: string;
-      unitPrice: number;
-      quantity?: number;
-    }[];
+    items: OrderItemRequestEntity[];
     note?: string;
     userId: string;
   }) {
@@ -24,7 +20,7 @@ export class OrderService {
 
     const orderItems = params.items.map(item => {
       return {
-        productId: item.productId,
+        skuId: item.skuId,
         name: item.name,
         unitPrice: item.unitPrice,
         quantity: item.quantity || 1,

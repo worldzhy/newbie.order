@@ -6,8 +6,8 @@ import {ApiProperty} from '@nestjs/swagger';
 import {IsNumber, IsOptional, IsString} from 'class-validator';
 
 class ProductEntity {
-  @ApiProperty({type: String})
-  id: string;
+  @ApiProperty({type: Number})
+  id: number;
 
   @ApiProperty({type: String})
   name: string;

@@ -48,14 +48,14 @@ export class ProductController {
   }
 
   @Get(':id')
-  async getProductById(@Param('id') id: string) {
+  async getProductById(@Param('id') id: number) {
     return await this.prisma.product.findUnique({where: {id}});
   }
 
   @Patch(':id')
   @ApiResponse({type: UpdateProductResponseDto})
   async updateProduct(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() body: UpdateProductRequestDto
   ) {
     return await this.prisma.product.update({
@@ -65,7 +65,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  async deleteFile(@Param('id') id: string) {
+  async deleteFile(@Param('id') id: number) {
     return await this.prisma.product.delete({
       where: {id},
     });
