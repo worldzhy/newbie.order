@@ -10,7 +10,7 @@ export class OrderItemRequestEntity {
   name: string;
 
   @ApiProperty({type: Number})
-  unitPrice: number;
+  priceInCents: number;
 
   @ApiProperty({type: Number})
   @IsOptional()
@@ -28,13 +28,13 @@ export class OrderItemResponseEntity {
   productId: string;
 
   @ApiProperty({type: Number})
-  unitPrice: number;
+  priceInCents: number;
 
   @ApiProperty({type: Number})
   quantity: number;
 
   @ApiProperty({type: Number})
-  subTotal: number;
+  subTotalInCents: number;
 }
 
 export class OrderEntity {
@@ -45,7 +45,7 @@ export class OrderEntity {
   status: OrderStatus;
 
   @ApiProperty({type: Number})
-  totalAmount: number;
+  totalInCents: number;
 
   @ApiProperty({enum: PaymentMethod})
   paymentMethod: PaymentMethod;

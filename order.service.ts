@@ -13,24 +13,24 @@ export class OrderService {
     note?: string;
     userId: string;
   }) {
-    let totalAmount = 0;
+    let totalInCents = 0;
     for (const item of params.items) {
-      totalAmount += item.unitPrice * (item.quantity || 1);
+      totalInCents += item.priceInCents * (item.quantity || 1);
     }
 
     const orderItems = params.items.map(item => {
       return {
         skuId: item.skuId,
         name: item.name,
-        unitPrice: item.unitPrice,
+        priceInCents: item.priceInCents,
         quantity: item.quantity || 1,
-        subTotal: item.unitPrice * (item.quantity || 1),
+        subTotalInCents: item.priceInCents * (item.quantity || 1),
       };
     });
 
     return await this.prisma.order.create({
       data: {
-        totalAmount: totalAmount,
+        totalInCents: totalInCents,
         paymentMethod: params.paymentMethod,
         items: {createMany: {data: orderItems}},
         note: params.note,

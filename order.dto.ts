@@ -31,7 +31,7 @@ export class CreateOrderResponseDto {
   status: OrderStatus;
 
   @ApiProperty({type: Number})
-  totalAmount: number;
+  totalInCents: number;
 
   @ApiProperty({enum: PaymentMethod})
   paymentMethod: PaymentMethod;

@@ -13,10 +13,10 @@ class ProductEntity {
   name: string;
 
   @ApiProperty({type: Number})
-  price: number;
+  priceInCents: number;
 
   @ApiProperty({type: Number, required: false})
-  discountedPrice?: number;
+  priceInCentsDiscounted?: number;
 }
 
 export class CreateProductRequestDto {
@@ -26,12 +26,12 @@ export class CreateProductRequestDto {
 
   @ApiProperty({type: Number, required: true})
   @IsNumber()
-  price: number;
+  priceInCents: number;
 
   @ApiProperty({type: Number, required: false})
   @IsNumber()
   @IsOptional()
-  discountedPrice?: number;
+  priceInCentsDiscounted?: number;
 }
 
 export class CreateProductResponseDto {
@@ -42,10 +42,10 @@ export class CreateProductResponseDto {
   name: string;
 
   @ApiProperty({type: Number})
-  price: number;
+  priceInCents: number;
 
   @ApiProperty({type: Number})
-  discountedPrice: number;
+  priceInCentsDiscounted: number;
 }
 
 export class ListProductsRequestDto extends CommonListRequestDto {
@@ -69,12 +69,12 @@ export class UpdateProductRequestDto {
   @ApiProperty({type: Number, required: false})
   @IsNumber()
   @IsOptional()
-  price?: number;
+  priceInCents?: number;
 
   @ApiProperty({type: Number, required: false})
   @IsNumber()
   @IsOptional()
-  discountedPrice?: number;
+  priceInCentsDiscounted?: number;
 }
 
 export class UpdateProductResponseDto extends CreateProductResponseDto {}
