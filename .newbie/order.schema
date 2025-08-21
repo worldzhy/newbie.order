@@ -10,14 +10,14 @@
 // * ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ ⌄ //
 
 model Product {
-  id               Int               @id @default(autoincrement())
-  skuId            String            @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name             String
-  price            Int // current price in cents
-  discountedPrice  Int? // current price after discount in cents
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  costPaymentRules CostPaymentRule[]
+  id                     Int               @id @default(autoincrement())
+  skuId                  String            @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                   String
+  priceInCents           Int // current price in cents
+  priceInCentsDiscounted Int? // current price after discount in cents
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  costPaymentRules       CostPaymentRule[]
 
   @@schema("microservice/order")
 }
@@ -25,7 +25,7 @@ model Product {
 model Order {
   id            String        @id @default(cuid())
   status        OrderStatus   @default(PENDING)
-  totalAmount   Int // in cents
+  totalInCents  Int // total amount in cents
   paymentMethod PaymentMethod
   note          String?
   userId        String        @db.Uuid
@@ -38,16 +38,16 @@ model Order {
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  skuId     String?  @db.Uuid
-  name      String
-  unitPrice Int // sold price in cents
-  quantity  Int
-  subTotal  Int // in cents
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   String
+  id              String   @id @default(cuid())
+  skuId           String?  @db.Uuid
+  name            String
+  priceInCents    Int // sold unit price in cents
+  quantity        Int
+  subTotalInCents Int // sub total in cents
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId         String
 
   @@schema("microservice/order")
 }
@@ -65,14 +65,14 @@ model Contributor {
 }
 
 model CostPaymentRule {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  contribution String
-  amount       Int? // fixed amount in cents
-  percentage   Int? // percentage of the order total amount
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  product      Product? @relation(fields: [productId], references: [id])
-  productId    Int?
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contribution  String
+  amountInCents Int? // fixed amount in cents
+  percentage    Int? // percentage of the order total amount
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  product       Product? @relation(fields: [productId], references: [id])
+  productId     Int?
 
   @@schema("microservice/order")
 }
@@ -80,7 +80,7 @@ model CostPaymentRule {
 model CostPayment {
   id            String        @id @default(cuid())
   method        PaymentMethod
-  amount        Float
+  amountInCents Int // actual payment amount in cents
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
