@@ -22,7 +22,7 @@ import {
 import {OrderService} from './order.service';
 import {TokenService} from '@microservices/account/security/token/token.service';
 import {Request} from 'express';
-import {OrderStatus} from '@prisma/client';
+import {OrderStatus, Prisma} from '@prisma/client';
 
 @ApiTags('Order Management')
 @ApiBearerAuth()
@@ -58,7 +58,7 @@ export class OrderController {
   @ApiResponse({type: ListOrdersResponseDto})
   async getOrders(@Query() query: ListOrdersRequestDto) {
     const result = await this.prisma.findManyInManyPages({
-      model: 'Order',
+      model: Prisma.ModelName.Order,
       pagination: query,
       findManyArgs: {
         where: {},

@@ -14,6 +14,7 @@ import {
   UpdateOrderResponseDto,
 } from '../order.dto';
 import {WechatCreateOrderRequestDto} from './wechat-order.dto';
+import {PaymentMethod} from '@prisma/client';
 
 @ApiTags('Order Management / Wechat Order')
 @ApiBearerAuth()
@@ -35,8 +36,33 @@ export class WechatOrderController {
       where: {wechatOpenId: body.wechatOpenId},
     });
 
+    // [step 2] Check if there's an existing pending order
+    const existingOrders = await this.prisma.order.findMany({
+      where: {userId: user.id, status: 'PENDING'},
+      include: {items: true},
+    });
+
+    // Compare items of existing orders with the new order
+    for (const order of existingOrders) {
+      const existingItems = order.items;
+
+      if (
+        existingItems.length === body.items.length &&
+        existingItems.every((existingItem, index) => {
+          const newItem = body.items[index];
+          return (
+            existingItem.skuId === newItem.skuId &&
+            existingItem.quantity === newItem.quantity
+          );
+        })
+      ) {
+        // If items match, return the existing order
+        return order;
+      }
+    }
+
     return await this.orderService.create({
-      paymentMethod: body.paymentMethod,
+      paymentMethod: PaymentMethod.WECHAT_PAY,
       items: body.items,
       note: body.note,
       userId: user.id,
