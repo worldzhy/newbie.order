@@ -8,12 +8,11 @@ import {
 } from '@nestjs/swagger';
 import {GuardByApiKey} from '@microservices/account/security/passport/api-key/api-key.decorator';
 import {OrderService} from '../order.service';
+import {CreateOrderResponseDto, UpdateOrderResponseDto} from '../order.dto';
 import {
-  CreateOrderResponseDto,
-  UpdateOrderRequestDto,
-  UpdateOrderResponseDto,
-} from '../order.dto';
-import {WechatCreateOrderRequestDto} from './wechat-order.dto';
+  CreateWechatOrderRequestDto,
+  UpdateWechatOrderRequestDto,
+} from './wechat-order.dto';
 import {PaymentMethod} from '@prisma/client';
 
 @ApiTags('Order Management / Wechat Order')
@@ -31,7 +30,7 @@ export class WechatOrderController {
   @ApiOperation({
     summary: '[Auth by API key] Call from Tencent cloudbase workflow',
   })
-  async createOrder(@Body() body: WechatCreateOrderRequestDto) {
+  async createOrder(@Body() body: CreateWechatOrderRequestDto) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: {wechatOpenId: body.wechatOpenId},
     });
@@ -77,7 +76,7 @@ export class WechatOrderController {
   })
   async updateOrder(
     @Param('id') id: string,
-    @Body() body: UpdateOrderRequestDto
+    @Body() body: UpdateWechatOrderRequestDto
   ) {
     return await this.prisma.order.update({
       where: {id},

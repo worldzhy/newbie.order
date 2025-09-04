@@ -1,8 +1,9 @@
 import {ApiProperty} from '@nestjs/swagger';
 import {IsArray, IsIn, IsOptional, IsString} from 'class-validator';
 import {OrderItemRequestEntity} from '../order.entity';
+import {OrderStatus} from '@prisma/client';
 
-export class WechatCreateOrderRequestDto {
+export class CreateWechatOrderRequestDto {
   @ApiProperty({type: String, required: true})
   @IsString()
   wechatOpenId: string;
@@ -15,4 +16,17 @@ export class WechatCreateOrderRequestDto {
   @IsString()
   @IsOptional()
   note?: string;
+}
+
+export class UpdateWechatOrderRequestDto {
+  @ApiProperty({type: String, required: false})
+  @IsString()
+  @IsOptional()
+  @IsIn(Object.values(OrderStatus))
+  status?: OrderStatus;
+
+  @ApiProperty({type: String, required: false})
+  @IsOptional()
+  @IsString()
+  wechatTransactionId?: string;
 }
