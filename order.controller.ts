@@ -16,7 +16,6 @@ import {
   CreateOrderResponseDto,
   ListOrdersRequestDto,
   ListOrdersResponseDto,
-  UpdateOrderRequestDto,
   UpdateOrderResponseDto,
 } from './order.dto';
 import {OrderService} from './order.service';
@@ -115,22 +114,59 @@ export class OrderController {
     return await this.prisma.order.findUnique({where: {id}});
   }
 
-  @Patch(':id')
-  @ApiResponse({type: UpdateOrderResponseDto})
-  async updateOrder(
-    @Param('id') id: string,
-    @Body() body: UpdateOrderRequestDto
-  ) {
-    return await this.prisma.order.update({
+  @Delete(':id')
+  async deleteOrder(@Param('id') id: string) {
+    return await this.prisma.order.delete({
       where: {id},
-      data: body,
     });
   }
 
-  @Delete(':id')
-  async deleteFile(@Param('id') id: string) {
-    return await this.prisma.order.delete({
+  //***********************************/
+  //* Order pay and refund operations */
+  //***********************************/
+
+  @Patch(':id/paid')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async paid(@Param('id') id: string) {
+    return await this.prisma.order.update({
       where: {id},
+      data: {status: OrderStatus.PAID},
+    });
+  }
+
+  @Patch(':id/refund-request')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async refundRequest(@Param('id') id: string) {
+    return await this.prisma.order.update({
+      where: {id},
+      data: {status: OrderStatus.REFUND_REQUESTED},
+    });
+  }
+
+  @Patch(':id/refund-approve')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async refundApproval(@Param('id') id: string) {
+    return await this.prisma.order.update({
+      where: {id},
+      data: {status: OrderStatus.REFUND_APPROVED},
+    });
+  }
+
+  @Patch(':id/refund-reject')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async refundReject(@Param('id') id: string) {
+    return await this.prisma.order.update({
+      where: {id},
+      data: {status: OrderStatus.REFUND_REJECTED},
+    });
+  }
+
+  @Patch(':id/refunded')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async refunded(@Param('id') id: string) {
+    return await this.prisma.order.update({
+      where: {id},
+      data: {status: OrderStatus.REFUNDED},
     });
   }
 

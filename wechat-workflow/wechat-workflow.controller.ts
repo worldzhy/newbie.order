@@ -10,27 +10,27 @@ import {GuardByApiKey} from '@microservices/account/security/passport/api-key/ap
 import {OrderService} from '../order.service';
 import {CreateOrderResponseDto, UpdateOrderResponseDto} from '../order.dto';
 import {
-  CreateWechatOrderRequestDto,
-  UpdateWechatOrderRequestDto,
-} from './wechat-order.dto';
-import {PaymentMethod} from '@prisma/client';
+  WechatWorkflowCreateOrderRequestDto,
+  WechatWorkflowUpdateOrderPaidRequestDto,
+} from './wechat-workflow.dto';
+import {OrderStatus, PaymentMethod} from '@prisma/client';
 
-@ApiTags('Order Management / Wechat Order')
+@ApiTags('Order Management / Wechat Workflow Order')
 @ApiBearerAuth()
-@Controller('wechat-orders')
-export class WechatOrderController {
+@GuardByApiKey()
+@Controller('wechat-workflow-orders')
+export class WechatWorkflowOrderController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly orderService: OrderService
   ) {}
 
-  @GuardByApiKey()
   @Post('')
-  @ApiResponse({type: CreateOrderResponseDto})
   @ApiOperation({
     summary: '[Auth by API key] Call from Tencent cloudbase workflow',
   })
-  async createOrder(@Body() body: CreateWechatOrderRequestDto) {
+  @ApiResponse({type: CreateOrderResponseDto})
+  async createOrder(@Body() body: WechatWorkflowCreateOrderRequestDto) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: {wechatOpenId: body.wechatOpenId},
     });
@@ -68,19 +68,27 @@ export class WechatOrderController {
     });
   }
 
-  @GuardByApiKey()
-  @Patch(':id')
+  @Patch(':id/paid')
   @ApiResponse({type: UpdateOrderResponseDto})
-  @ApiOperation({
-    summary: '[Auth by API key] Call from Tencent cloudbase workflow',
-  })
-  async updateOrder(
+  async paid(
     @Param('id') id: string,
-    @Body() body: UpdateWechatOrderRequestDto
+    @Body() body: WechatWorkflowUpdateOrderPaidRequestDto
   ) {
     return await this.prisma.order.update({
       where: {id},
-      data: body,
+      data: {
+        status: OrderStatus.PAID,
+        wechatTransactionId: body.wechatTransactionId,
+      },
+    });
+  }
+
+  @Patch(':id/refunded')
+  @ApiResponse({type: UpdateOrderResponseDto})
+  async refunded(@Param('id') id: string) {
+    return await this.prisma.order.update({
+      where: {id},
+      data: {status: OrderStatus.REFUNDED},
     });
   }
 

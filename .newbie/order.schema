@@ -98,6 +98,9 @@ enum OrderStatus {
   SHIPPED
   COMPLETED
   CANCELLED
+  REFUND_REQUESTED
+  REFUND_APPROVED
+  REFUND_REJECTED
   REFUNDED
 
   @@schema("microservice/order")
