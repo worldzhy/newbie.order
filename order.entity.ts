@@ -14,7 +14,7 @@ export class OrderItemRequestEntity {
 
   @ApiProperty({type: Number})
   @IsOptional()
-  quantity?: number;
+  quantity: number;
 }
 
 export class OrderItemResponseEntity {
