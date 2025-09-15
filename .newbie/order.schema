@@ -13,6 +13,7 @@ model Product {
   id                     Int               @id @default(autoincrement())
   skuId                  String            @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                   String
+  imageFileId            String?
   priceInCents           Int // current price in cents
   priceInCentsDiscounted Int? // current price after discount in cents
   createdAt              DateTime          @default(now())

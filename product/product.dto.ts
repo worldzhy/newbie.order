@@ -12,6 +12,9 @@ class ProductEntity {
   @ApiProperty({type: String})
   name: string;
 
+  @ApiProperty({type: String, required: false})
+  imageFileId?: string;
+
   @ApiProperty({type: Number})
   priceInCents: number;
 
@@ -29,8 +32,8 @@ export class CreateProductRequestDto {
   priceInCents: number;
 
   @ApiProperty({type: Number, required: false})
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   priceInCentsDiscounted?: number;
 }
 
@@ -50,8 +53,8 @@ export class CreateProductResponseDto {
 
 export class ListProductsRequestDto extends CommonListRequestDto {
   @ApiProperty({type: String, required: false})
-  @IsString()
   @IsOptional()
+  @IsString()
   name?: string;
 }
 
@@ -62,18 +65,23 @@ export class ListProductsResponseDto extends CommonListResponseDto {
 
 export class UpdateProductRequestDto {
   @ApiProperty({type: String, required: false})
-  @IsString()
   @IsOptional()
+  @IsString()
   name?: string;
 
-  @ApiProperty({type: Number, required: false})
-  @IsNumber()
+  @ApiProperty({type: String, required: false})
   @IsOptional()
+  @IsString()
+  imageFileId?: string;
+
+  @ApiProperty({type: Number, required: false})
+  @IsOptional()
+  @IsNumber()
   priceInCents?: number;
 
   @ApiProperty({type: Number, required: false})
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   priceInCentsDiscounted?: number;
 }
 
