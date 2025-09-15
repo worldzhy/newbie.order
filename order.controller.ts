@@ -102,7 +102,7 @@ export class OrderController {
       model: 'Order',
       pagination: query,
       findManyArgs: {
-        where: {userId, status: OrderStatus.PAID},
+        where: {userId},
         orderBy: {createdAt: 'desc'},
         include: {items: true},
       },
