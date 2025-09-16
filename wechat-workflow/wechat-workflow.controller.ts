@@ -1,5 +1,5 @@
 import {PrismaService} from '@framework/prisma/prisma.service';
-import {Body, Controller, Param, Patch, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, Patch, Post} from '@nestjs/common';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -24,6 +24,12 @@ export class WechatWorkflowOrderController {
     private readonly prisma: PrismaService,
     private readonly orderService: OrderService
   ) {}
+
+  @Get(':id')
+  @ApiOperation({summary: '[Auth by API key] Get order details'})
+  async getOrder(@Param('id') id: string) {
+    return await this.prisma.order.findUnique({where: {id}});
+  }
 
   @Post('')
   @ApiOperation({
