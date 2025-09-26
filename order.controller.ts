@@ -53,6 +53,11 @@ export class OrderController {
     });
   }
 
+  @Get(':id')
+  async getOrder(@Param('id') id: string) {
+    return await this.prisma.order.findUnique({where: {id}});
+  }
+
   @Get('')
   @ApiResponse({type: ListOrdersResponseDto})
   async getOrders(@Query() query: ListOrdersRequestDto) {
@@ -107,11 +112,6 @@ export class OrderController {
         include: {items: true},
       },
     });
-  }
-
-  @Get(':id')
-  async getOrderById(@Param('id') id: string) {
-    return await this.prisma.order.findUnique({where: {id}});
   }
 
   @Delete(':id')

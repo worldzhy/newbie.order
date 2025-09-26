@@ -85,6 +85,7 @@ export class WechatWorkflowOrderController {
       data: {
         status: OrderStatus.PAID,
         wechatTransactionId: body.wechatTransactionId,
+        paidAt: new Date(),
       },
     });
   }
