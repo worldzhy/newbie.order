@@ -61,8 +61,9 @@ export class WechatWorkflowOrderController {
           );
         })
       ) {
-        // If items match, return the existing order
-        return order;
+        // ! Do not return the existing order, because the order id might be invalid.
+        await this.prisma.order.delete({where: {id: order.id}});
+        break;
       }
     }
 
