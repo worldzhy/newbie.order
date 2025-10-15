@@ -55,7 +55,24 @@ export class OrderController {
 
   @Get(':id')
   async getOrder(@Param('id') id: string) {
-    return await this.prisma.order.findUnique({where: {id}});
+    const order = await this.prisma.order.findUnique({
+      where: {id},
+      include: {items: true},
+    });
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    // Attach imageFileId to each order item
+    for (const item of order.items) {
+      const product = await this.prisma.product.findUnique({
+        where: {skuId: item.skuId},
+        select: {imageFileId: true},
+      });
+      item['imageFileId'] = product ? product.imageFileId : null;
+    }
+
+    return order;
   }
 
   @Get('')
