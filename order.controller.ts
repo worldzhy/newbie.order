@@ -82,7 +82,7 @@ export class OrderController {
       model: Prisma.ModelName.Order,
       pagination: query,
       findManyArgs: {
-        where: {},
+        where: {userId: query.userId},
         orderBy: {createdAt: 'desc'},
         include: {items: true},
       },
@@ -106,29 +106,6 @@ export class OrderController {
     });
 
     return result;
-  }
-
-  @Get('my')
-  @ApiResponse({type: ListOrdersResponseDto})
-  async getMyOrders(
-    @Req() request: Request,
-    @Query() query: ListOrdersRequestDto
-  ) {
-    const accessToken = this.tokenService.getTokenFromHttpRequest(request);
-    if (!accessToken) {
-      throw new Error('Access token is required');
-    }
-    const userId = this.tokenService.verifyUserAccessToken(accessToken).userId;
-
-    return await this.prisma.findManyInManyPages({
-      model: 'Order',
-      pagination: query,
-      findManyArgs: {
-        where: {userId},
-        orderBy: {createdAt: 'desc'},
-        include: {items: true},
-      },
-    });
   }
 
   @Delete(':id')
